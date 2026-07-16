@@ -2,7 +2,7 @@ import POTableRow from './POTableRow.jsx'
 
 export default function POTable({ poList, onEdit, onToggleFulfil }) {
   if (!poList.length) {
-    return <p style={{ color: '#6b7280', padding: 20 }}>No purchase orders found for this filter.</p>
+    return <div className="empty-state">No purchase orders found for this filter.</div>
   }
 
   return (

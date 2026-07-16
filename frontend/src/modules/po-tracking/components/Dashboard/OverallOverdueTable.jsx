@@ -1,9 +1,11 @@
 export default function OverallOverdueTable({ overdueList = [] }) {
   return (
-    <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-      <h3 style={{ padding: '16px 20px 0' }}>Overdue POs — Across All Portals</h3>
+    <div className="table-card">
+      <div style={{ padding: '16px 18px', borderBottom: '1px solid #f0f0f0', fontWeight: 700, fontSize: 14 }}>
+        Overdue POs — Across All Portals
+      </div>
       {overdueList.length === 0 ? (
-        <p style={{ padding: 20, color: '#6b7280' }}>No overdue POs right now. 🎉</p>
+        <div className="empty-state">No overdue POs right now. 🎉</div>
       ) : (
         <table>
           <thead>

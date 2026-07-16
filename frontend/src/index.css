@@ -5,8 +5,8 @@
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f4f5f7;
-  color: #1a1a1a;
+  background: #f3f4f6;
+  color: #111827;
 }
 
 a {
@@ -14,32 +14,229 @@ a {
   color: inherit;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+/* ---------- Layout shell ---------- */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
   background: #fff;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px 0;
+  flex-shrink: 0;
 }
 
-th, td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
+.sidebar-brand {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 12px;
+}
+
+.sidebar-brand h1 {
+  font-size: 20px;
+  color: #4f46e5;
+  margin: 0;
+}
+
+.sidebar-brand p {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 2px 0 0;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
   font-size: 14px;
+  color: #374151;
+  border-left: 3px solid transparent;
 }
 
-th {
+.sidebar-nav a.active {
+  background: #eef2ff;
+  color: #4338ca;
+  font-weight: 600;
+  border-left: 3px solid #4f46e5;
+}
+
+.sidebar-nav a:hover {
   background: #f9fafb;
+}
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar h2 {
+  font-size: 16px;
+  margin: 0;
   font-weight: 600;
 }
 
-.card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  border: 1px solid #eee;
+.topbar .badge-admin {
+  font-size: 13px;
+  color: #6b7280;
 }
 
+.page-content {
+  padding: 24px 28px;
+}
+
+/* ---------- Summary cards (colored top border like InventoryBrain) ---------- */
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1000px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-top: 4px solid #ccc;
+  padding: 16px 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.stat-card.c-amazon { border-top-color: #f97316; }
+.stat-card.c-flipkart { border-top-color: #2563eb; }
+.stat-card.c-blinkit { border-top-color: #eab308; }
+.stat-card.c-zepto { border-top-color: #7c3aed; }
+
+.stat-card .label {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.stat-card .row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #374151;
+  padding: 3px 0;
+}
+
+.stat-card .row b {
+  color: #111827;
+}
+
+.stat-card .overdue-line {
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ---------- Pill tabs (portal navigation with counts, like Open PO tabs) ---------- */
+.pill-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pill-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.pill-tab.active {
+  background: #ea580c;
+  color: #fff;
+  border-color: #ea580c;
+}
+
+.pill-tab .count {
+  background: rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 12px;
+}
+
+.pill-tab:not(.active) .count {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* ---------- Info banner ---------- */
+.info-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ---------- Tables ---------- */
+.table-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  font-size: 13px;
+}
+
+th {
+  background: #fafafa;
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+tbody tr:hover {
+  background: #fafafa;
+}
+
+.overdue-row {
+  background: #fff7ed !important;
+}
+
+/* ---------- Badges ---------- */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -53,43 +250,63 @@ th {
 .badge-red { background: #fee2e2; color: #991b1b; }
 .badge-gray { background: #f3f4f6; color: #374151; }
 
-.tabs {
+/* ---------- Buttons ---------- */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.btn:hover {
+  background: #f9fafb;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+}
+
+.filter-bar {
   display: flex;
-  gap: 4px;
-  border-bottom: 2px solid #e5e7eb;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.tab-link {
-  padding: 10px 18px;
+.filter-btn {
+  border: 1px solid #e5e7eb;
+  background: #fff;
   color: #6b7280;
-  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
   text-transform: capitalize;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
 }
 
-.tab-link.active {
-  color: #2563eb;
-  border-bottom: 3px solid #2563eb;
+.filter-btn.active {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+  font-weight: 600;
 }
 
-.grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-@media (max-width: 900px) {
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-}
-
-.overdue-row {
-  background: #fef2f2 !important;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px;
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
 }

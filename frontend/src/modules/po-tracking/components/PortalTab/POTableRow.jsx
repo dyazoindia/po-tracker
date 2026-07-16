@@ -6,12 +6,12 @@ export default function POTableRow({ po, onEdit, onToggleFulfil }) {
   const isOverdue = po.status === 'overdue'
   return (
     <tr className={isOverdue ? 'overdue-row' : ''}>
-      <td>{po.poId}</td>
+      <td style={{ fontWeight: 600 }}>{po.poId}</td>
       <td>{po.sku}</td>
       <td>{po.qtyOrdered}</td>
       <td>{new Date(po.appointmentDate).toLocaleDateString()}</td>
       <td>{po.qtySent}</td>
-      <td>{po.qtyPending}</td>
+      <td style={{ fontWeight: 600, color: po.qtyPending > 0 ? '#dc2626' : '#16a34a' }}>{po.qtyPending}</td>
       <td><StatusBadge status={po.status} /></td>
       <td><AgingIndicator appointmentDate={po.appointmentDate} fulfilled={po.status === 'fulfilled'} /></td>
       <td>
@@ -22,7 +22,7 @@ export default function POTableRow({ po, onEdit, onToggleFulfil }) {
         />
       </td>
       <td>
-        <button onClick={() => onEdit(po)}>Edit</button>
+        <button className="btn" onClick={() => onEdit(po)}>Edit</button>
       </td>
     </tr>
   )
