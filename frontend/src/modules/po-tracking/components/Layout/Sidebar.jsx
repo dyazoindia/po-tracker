@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/po-tracking/flipkart', label: '🔵 Flipkart' },
   { to: '/po-tracking/blinkit', label: '🟡 Blinkit' },
   { to: '/po-tracking/zepto', label: '🟣 Zepto' },
+  { to: '/po-tracking/upload', label: '📤 Upload Data' },
   { to: '/po-tracking/tv-view', label: '📺 TV / Warehouse View' },
 ]
 

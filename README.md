@@ -29,6 +29,11 @@ npm run dev
 ```
 Runs on http://localhost:5173
 
+## Excel Upload
+Go to **Upload Data** in the sidebar. Required columns in your .xlsx: `PO ID, Portal, SKU, Qty Ordered, Appointment Date`.
+Optional columns: `Product Name, Appointment Slot, Assigned To`. Portal must be one of: amazon, flipkart, blinkit, zepto (case-insensitive).
+Existing PO IDs get updated instead of duplicated.
+
 ## Deployment
 
 1. Push this whole folder to a new GitHub repo (e.g. `dyazoindia/po-tracker`).

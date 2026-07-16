@@ -30,3 +30,12 @@ export const createPO = (payload) =>
 
 export const fetchTVView = () =>
   fetch(`${BASE}/api/po/tv-view`).then(handle)
+
+export const bulkUploadPOs = (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return fetch(`${BASE}/api/po/bulk-upload`, {
+    method: 'POST',
+    body: formData,
+  }).then(handle)
+}

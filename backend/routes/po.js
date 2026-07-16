@@ -1,8 +1,108 @@
 import express from 'express'
+import multer from 'multer'
+import * as XLSX from 'xlsx'
 import PO from '../models/PO.js'
 
 const router = express.Router()
 const PORTALS = ['amazon', 'flipkart', 'blinkit', 'zepto']
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } })
+
+// Convert Excel serial date or string to JS Date
+function parseExcelDate(value) {
+  if (!value) return null
+  if (value instanceof Date) return value
+  if (typeof value === 'number') {
+    // Excel serial date -> JS Date
+    return new Date(Math.round((value - 25569) * 86400 * 1000))
+  }
+  const parsed = new Date(value)
+  return isNaN(parsed) ? null : parsed
+}
+
+// Bulk upload POs from Excel
+// Expected columns (case-insensitive, flexible naming): PO ID, Portal, SKU, Product Name, Qty Ordered, Appointment Date, Appointment Slot, Assigned To
+router.post('/bulk-upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
+
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer', cellDates: true })
+    const sheetName = workbook.SheetNames[0]
+    const sheet = workbook.Sheets[sheetName]
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+
+    const results = { created: 0, updated: 0, skipped: 0, errors: [] }
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
+      const rowNum = i + 2 // account for header row
+
+      const get = (...keys) => {
+        for (const k of keys) {
+          const found = Object.keys(row).find((rk) => rk.trim().toLowerCase() === k.toLowerCase())
+          if (found && row[found] !== '') return row[found]
+        }
+        return undefined
+      }
+
+      const poId = get('PO ID', 'PO Id', 'poId', 'PO')
+      const portal = String(get('Portal') || '').trim().toLowerCase()
+      const sku = get('SKU', 'Sku')
+      const productName = get('Product Name', 'Product', 'Title')
+      const qtyOrdered = Number(get('Qty Ordered', 'Qty', 'Quantity'))
+      const appointmentDate = parseExcelDate(get('Appointment Date', 'Appointment', 'Date'))
+      const appointmentSlot = get('Appointment Slot', 'Slot')
+      const assignedTo = get('Assigned To', 'Owner')
+
+      if (!poId || !portal || !sku || !qtyOrdered || !appointmentDate) {
+        results.errors.push(`Row ${rowNum}: missing required field(s) (PO ID/Portal/SKU/Qty Ordered/Appointment Date)`)
+        results.skipped++
+        continue
+      }
+
+      if (!PORTALS.includes(portal)) {
+        results.errors.push(`Row ${rowNum}: invalid portal "${portal}" (must be amazon/flipkart/blinkit/zepto)`)
+        results.skipped++
+        continue
+      }
+
+      try {
+        const existing = await PO.findOne({ poId: String(poId) })
+        if (existing) {
+          existing.portal = portal
+          existing.sku = sku
+          existing.productName = productName
+          existing.qtyOrdered = qtyOrdered
+          existing.appointmentDate = appointmentDate
+          if (appointmentSlot) existing.appointmentSlot = appointmentSlot
+          if (assignedTo) existing.assignedTo = assignedTo
+          existing.history.push({ field: 'bulkUpload', oldValue: 'existing', newValue: 'updated via Excel', changedBy: req.body.uploadedBy || 'excel-upload' })
+          await existing.save()
+          results.updated++
+        } else {
+          const po = new PO({
+            poId: String(poId),
+            portal,
+            sku,
+            productName,
+            qtyOrdered,
+            appointmentDate,
+            appointmentSlot,
+            assignedTo,
+          })
+          await po.save()
+          results.created++
+        }
+      } catch (rowErr) {
+        results.errors.push(`Row ${rowNum}: ${rowErr.message}`)
+        results.skipped++
+      }
+    }
+
+    res.json(results)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
 
 // Create new PO
 router.post('/', async (req, res) => {
