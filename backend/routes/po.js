@@ -20,7 +20,7 @@ function parseExcelDate(value) {
 }
 
 // Bulk upload POs from Excel
-// Expected columns (case-insensitive, flexible naming): PO ID, Portal, SKU, Product Name, Qty Ordered, Appointment Date, Appointment Slot, Assigned To
+// Expected columns (case-insensitive, flexible naming): PO ID, Portal, Qty, Appointment Status, Appointment Date
 router.post('/bulk-upload', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' })
@@ -46,15 +46,14 @@ router.post('/bulk-upload', upload.single('file'), async (req, res) => {
 
       const poId = get('PO ID', 'PO Id', 'poId', 'PO')
       const portal = String(get('Portal') || '').trim().toLowerCase()
-      const sku = get('SKU', 'Sku')
-      const productName = get('Product Name', 'Product', 'Title')
       const qtyOrdered = Number(get('Qty Ordered', 'Qty', 'Quantity'))
       const appointmentDate = parseExcelDate(get('Appointment Date', 'Appointment', 'Date'))
-      const appointmentSlot = get('Appointment Slot', 'Slot')
+      const rawStatus = String(get('Appointment Status', 'Appointment') || '').trim().toLowerCase()
+      const appointmentStatus = rawStatus.includes('not') ? 'not_scheduled' : rawStatus.includes('schedul') ? 'scheduled' : 'not_scheduled'
       const assignedTo = get('Assigned To', 'Owner')
 
-      if (!poId || !portal || !sku || !qtyOrdered || !appointmentDate) {
-        results.errors.push(`Row ${rowNum}: missing required field(s) (PO ID/Portal/SKU/Qty Ordered/Appointment Date)`)
+      if (!poId || !portal || !qtyOrdered || !appointmentDate) {
+        results.errors.push(`Row ${rowNum}: missing required field(s) (PO ID/Portal/Qty/Appointment Date)`)
         results.skipped++
         continue
       }
@@ -69,11 +68,9 @@ router.post('/bulk-upload', upload.single('file'), async (req, res) => {
         const existing = await PO.findOne({ poId: String(poId) })
         if (existing) {
           existing.portal = portal
-          existing.sku = sku
-          existing.productName = productName
           existing.qtyOrdered = qtyOrdered
           existing.appointmentDate = appointmentDate
-          if (appointmentSlot) existing.appointmentSlot = appointmentSlot
+          existing.appointmentStatus = appointmentStatus
           if (assignedTo) existing.assignedTo = assignedTo
           existing.history.push({ field: 'bulkUpload', oldValue: 'existing', newValue: 'updated via Excel', changedBy: req.body.uploadedBy || 'excel-upload' })
           await existing.save()
@@ -82,11 +79,9 @@ router.post('/bulk-upload', upload.single('file'), async (req, res) => {
           const po = new PO({
             poId: String(poId),
             portal,
-            sku,
-            productName,
             qtyOrdered,
             appointmentDate,
-            appointmentSlot,
+            appointmentStatus,
             assignedTo,
           })
           await po.save()
@@ -107,11 +102,11 @@ router.post('/bulk-upload', upload.single('file'), async (req, res) => {
 // Create new PO
 router.post('/', async (req, res) => {
   try {
-    const { poId, portal, sku, productName, qtyOrdered, appointmentDate, appointmentSlot, assignedTo } = req.body
-    if (!poId || !portal || !sku || !qtyOrdered || !appointmentDate) {
-      return res.status(400).json({ error: 'poId, portal, sku, qtyOrdered, appointmentDate are required' })
+    const { poId, portal, qtyOrdered, appointmentDate, appointmentStatus, assignedTo } = req.body
+    if (!poId || !portal || !qtyOrdered || !appointmentDate) {
+      return res.status(400).json({ error: 'poId, portal, qtyOrdered, appointmentDate are required' })
     }
-    const po = new PO({ poId, portal, sku, productName, qtyOrdered, appointmentDate, appointmentSlot, assignedTo })
+    const po = new PO({ poId, portal, qtyOrdered, appointmentDate, appointmentStatus, assignedTo })
     await po.save()
     res.status(201).json(po)
   } catch (err) {
@@ -152,7 +147,7 @@ router.get('/summary', async (req, res) => {
     const overallOverdue = await PO.find({ status: 'overdue' })
       .sort({ appointmentDate: 1 })
       .limit(50)
-      .select('poId portal sku appointmentDate qtyPending')
+      .select('poId portal appointmentDate qtyPending')
 
     result.overallOverdue = overallOverdue
     res.json(result)
@@ -175,7 +170,7 @@ router.get('/tv-view', async (req, res) => {
     const overdueList = await PO.find({ status: 'overdue' })
       .sort({ appointmentDate: 1 })
       .limit(20)
-      .select('poId portal sku appointmentDate qtyPending')
+      .select('poId portal appointmentDate qtyPending')
 
     res.json({ counts, overdueList })
   } catch (err) {
@@ -215,7 +210,7 @@ router.patch('/:poId', async (req, res) => {
     const po = await PO.findOne({ poId: req.params.poId })
     if (!po) return res.status(404).json({ error: 'PO not found' })
 
-    const editableFields = ['qtySent', 'remarks', 'assignedTo', 'appointmentDate', 'appointmentSlot']
+    const editableFields = ['qtySent', 'remarks', 'assignedTo', 'appointmentDate', 'appointmentStatus']
     const changedBy = req.body.updatedBy || 'unknown'
 
     for (const field of editableFields) {

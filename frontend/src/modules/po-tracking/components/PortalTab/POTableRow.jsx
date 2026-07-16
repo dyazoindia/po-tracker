@@ -7,8 +7,12 @@ export default function POTableRow({ po, onEdit, onToggleFulfil }) {
   return (
     <tr className={isOverdue ? 'overdue-row' : ''}>
       <td style={{ fontWeight: 600 }}>{po.poId}</td>
-      <td>{po.sku}</td>
       <td>{po.qtyOrdered}</td>
+      <td>
+        <span className={`badge ${po.appointmentStatus === 'scheduled' ? 'badge-green' : 'badge-gray'}`}>
+          {po.appointmentStatus === 'scheduled' ? 'Scheduled' : 'Not Scheduled'}
+        </span>
+      </td>
       <td>{new Date(po.appointmentDate).toLocaleDateString()}</td>
       <td>{po.qtySent}</td>
       <td style={{ fontWeight: 600, color: po.qtyPending > 0 ? '#dc2626' : '#16a34a' }}>{po.qtyPending}</td>

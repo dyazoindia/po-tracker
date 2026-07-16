@@ -12,7 +12,6 @@ export default function OverallOverdueTable({ overdueList = [] }) {
             <tr>
               <th>PO ID</th>
               <th>Portal</th>
-              <th>SKU</th>
               <th>Appointment Date</th>
               <th>Qty Pending</th>
             </tr>
@@ -22,7 +21,6 @@ export default function OverallOverdueTable({ overdueList = [] }) {
               <tr key={po.poId} className="overdue-row">
                 <td>{po.poId}</td>
                 <td style={{ textTransform: 'capitalize' }}>{po.portal}</td>
-                <td>{po.sku}</td>
                 <td>{new Date(po.appointmentDate).toLocaleDateString()}</td>
                 <td>{po.qtyPending}</td>
               </tr>

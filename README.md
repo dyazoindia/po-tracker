@@ -30,8 +30,9 @@ npm run dev
 Runs on http://localhost:5173
 
 ## Excel Upload
-Go to **Upload Data** in the sidebar. Required columns in your .xlsx: `PO ID, Portal, SKU, Qty Ordered, Appointment Date`.
-Optional columns: `Product Name, Appointment Slot, Assigned To`. Portal must be one of: amazon, flipkart, blinkit, zepto (case-insensitive).
+Go to **Upload Data** in the sidebar. Required columns in your .xlsx: `PO ID, Portal, Qty, Appointment Date`.
+Optional columns: `Appointment Status` (Scheduled / Not Scheduled), `Assigned To`.
+Portal must be one of: amazon, flipkart, blinkit, zepto (case-insensitive).
 Existing PO IDs get updated instead of duplicated.
 
 ## Deployment

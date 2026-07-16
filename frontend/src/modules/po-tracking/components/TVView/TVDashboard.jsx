@@ -32,14 +32,13 @@ export default function TVDashboard() {
       <h2 style={{ fontSize: 30, color: '#f87171' }}>Overdue POs</h2>
       <table style={{ width: '100%', fontSize: 20, color: '#fff' }}>
         <thead>
-          <tr><th>PO ID</th><th>Portal</th><th>SKU</th><th>Appointment Date</th><th>Qty Pending</th></tr>
+          <tr><th>PO ID</th><th>Portal</th><th>Appointment Date</th><th>Qty Pending</th></tr>
         </thead>
         <tbody>
           {(data.overdueList || []).map((po) => (
             <tr key={po.poId}>
               <td>{po.poId}</td>
               <td style={{ textTransform: 'capitalize' }}>{po.portal}</td>
-              <td>{po.sku}</td>
               <td>{new Date(po.appointmentDate).toLocaleDateString()}</td>
               <td>{po.qtyPending}</td>
             </tr>

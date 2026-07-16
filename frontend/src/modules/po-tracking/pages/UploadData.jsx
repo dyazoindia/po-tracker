@@ -43,8 +43,9 @@ export default function UploadData() {
       <Topbar title="Upload Data" />
       <div className="page-content">
         <div className="info-banner">
-          Upload an Excel (.xlsx) file with PO data. Required columns: <b>PO ID, Portal, SKU, Qty Ordered, Appointment Date</b>.
-          Optional: Product Name, Appointment Slot, Assigned To. Portal must be one of: amazon, flipkart, blinkit, zepto.
+          Upload an Excel (.xlsx) file with PO data. Required columns: <b>PO ID, Portal, Qty, Appointment Date</b>.
+          Optional: <b>Appointment Status</b> (Scheduled / Not Scheduled), Assigned To.
+          Portal must be one of: amazon, flipkart, blinkit, zepto.
           If a PO ID already exists, it will be updated instead of duplicated.
         </div>
 

@@ -11,12 +11,10 @@ const historySchema = new mongoose.Schema({
 const poSchema = new mongoose.Schema({
   poId: { type: String, required: true, unique: true },
   portal: { type: String, required: true, enum: ['amazon', 'flipkart', 'blinkit', 'zepto'] },
-  sku: { type: String, required: true },
-  productName: String,
   qtyOrdered: { type: Number, required: true },
   qtySent: { type: Number, default: 0 },
   qtyPending: { type: Number, default: function () { return this.qtyOrdered } },
-  appointmentSlot: String,
+  appointmentStatus: { type: String, enum: ['scheduled', 'not_scheduled'], default: 'not_scheduled' },
   appointmentDate: { type: Date, required: true },
   status: { type: String, enum: ['not_started', 'partial', 'fulfilled', 'overdue'], default: 'not_started' },
   fulfilTick: { type: Boolean, default: false },

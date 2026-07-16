@@ -10,8 +10,8 @@ export default function POTable({ poList, onEdit, onToggleFulfil }) {
       <thead>
         <tr>
           <th>PO ID</th>
-          <th>SKU</th>
           <th>Qty Ordered</th>
+          <th>Appointment</th>
           <th>Appointment Date</th>
           <th>Qty Sent</th>
           <th>Qty Pending</th>
