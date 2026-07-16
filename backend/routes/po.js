@@ -36,9 +36,12 @@ router.post('/bulk-upload', upload.single('file'), async (req, res) => {
       const row = rows[i]
       const rowNum = i + 2 // account for header row
 
+      const normalize = (s) => String(s).trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+
       const get = (...keys) => {
         for (const k of keys) {
-          const found = Object.keys(row).find((rk) => rk.trim().toLowerCase() === k.toLowerCase())
+          const target = normalize(k)
+          const found = Object.keys(row).find((rk) => normalize(rk) === target)
           if (found && row[found] !== '') return row[found]
         }
         return undefined
